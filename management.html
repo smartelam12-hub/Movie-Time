@@ -211,6 +211,43 @@
         .btn-em-cancel{padding:10px 22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#8892a4;font-weight:600;font-size:.88rem;cursor:pointer;transition:all .2s;font-family:inherit;}
         .btn-em-cancel:hover{background:rgba(255,255,255,.09);color:#fff;}
         @media(max-width:580px){.em-row{grid-template-columns:1fr;}.em-body{padding:16px;}.em-foot{padding:12px 16px;}}
+
+        /* Custom Toast Notifications */
+        .custom-toast {
+            position: fixed;
+            bottom: 24px;
+            right: -340px;
+            width: 320px;
+            background: rgba(13, 28, 50, 0.96);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 12px;
+            padding: 16px;
+            color: #fff;
+            box-shadow: 0 10px 40px rgba(0, 240, 255, 0.15);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: right 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(12px);
+            text-align: left;
+        }
+        .custom-toast.show {
+            right: 24px;
+        }
+        .custom-toast-content {
+            flex: 1;
+        }
+        .custom-toast-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 3px;
+        }
+        .custom-toast-msg {
+            font-size: 0.76rem;
+            color: #8892a4;
+            line-height: 1.3;
+        }
     </style>
 </head>
 <body>
@@ -422,6 +459,45 @@
     <!-- Management Dashboard Logic -->
     <script src="gdrive_v3.js"></script>
     <script>
+        function showNotification(title, message, isSuccess = true) {
+            const oldToast = document.querySelector(".custom-toast");
+            if (oldToast) oldToast.remove();
+            
+            const toast = document.createElement("div");
+            toast.className = "custom-toast";
+            if (isSuccess) {
+                toast.style.borderColor = "var(--accent-green)";
+                toast.style.boxShadow = "0 8px 32px rgba(52, 199, 89, 0.15)";
+            } else {
+                toast.style.borderColor = "var(--accent-red)";
+                toast.style.boxShadow = "0 8px 32px rgba(255, 59, 48, 0.15)";
+            }
+            
+            const iconClass = isSuccess ? "fa-circle-check" : "fa-circle-exclamation";
+            const iconColor = isSuccess ? "var(--accent-green)" : "var(--accent-red)";
+            
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass}" style="font-size: 1.4rem; color: ${iconColor};"></i>
+                <div class="custom-toast-content">
+                    <div class="custom-toast-title" style="color: ${isSuccess ? 'var(--accent-green)' : 'var(--accent-red)'}">${title}</div>
+                    <div class="custom-toast-msg">${message}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add("show");
+            }, 10);
+            
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => {
+                    toast.remove();
+                }, 400);
+            }, 4500);
+        }
+
         // Load releases
         let movies = [];
         function loadMovies() {
@@ -584,7 +660,7 @@
                     safeStorage.setItem("movies_db", JSON.stringify([]));
                     renderTable();
                     triggerGDriveUpload(); // Sync wiping
-                    alert("Catalog database wiped successfully. Refresh the catalog homepage to see the seeded catalog defaults.");
+                    showNotification("Catalog Reset", "Catalog database wiped successfully. Refresh the homepage to see changes.", true);
                 }
             }
         });
@@ -656,9 +732,9 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
             try {
                 await triggerGDriveUpload();
-                alert("Database successfully synchronized and shared publicly on Google Drive cloud!");
+                showNotification("Cloud Sync", "Database successfully synchronized and shared publicly on Google Drive cloud!", true);
             } catch (e) {
-                alert("Sync failed: " + e.message);
+                showNotification("Sync Failed", e.message, false);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sync local data to Cloud';
@@ -672,14 +748,14 @@
             if (!cid || !key) {
                 if (confirm("Restore seeded default Google Drive credentials?")) {
                     GDriveSync.clearCredentials();
-                    alert("Credentials reset to defaults.");
+                    showNotification("System Settings", "Credentials reset to defaults.", true);
                 }
                 return;
             }
             
             const actualKey = key.includes("••••") ? GDriveSync.apiKey : key;
             GDriveSync.setCredentials(cid, actualKey);
-            alert("Custom credentials saved successfully!");
+            showNotification("System Settings", "Custom credentials saved successfully!", true);
         });
 
         btnSyncToggle.addEventListener("click", () => {
