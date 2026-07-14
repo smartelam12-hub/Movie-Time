@@ -1303,14 +1303,38 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------------------------------------------
     async function loadFromGitHub() {
         if (typeof GitHubSync === "undefined") return;
+
+        // If admin just uploaded a movie, skip overwrite for this session
+        // so the newly uploaded movie shows immediately
+        const justUploaded = safeStorage.getItem("gh_just_uploaded");
+        if (justUploaded) {
+            safeStorage.removeItem("gh_just_uploaded");
+            console.log("[GitHub] Skipping cloud overwrite — fresh local upload detected.");
+            return;
+        }
+
         try {
             const cloudMovies = await GitHubSync.loadMovies();
-            if (cloudMovies && cloudMovies.length > 0) {
+            if (!cloudMovies) return;
+
+            // Get current local movies
+            let localMovies = [];
+            try { localMovies = JSON.parse(safeStorage.getItem("movies_db") || "[]"); } catch(_) {}
+
+            // Merge: use whichever has MORE movies to avoid overwriting new uploads
+            // that haven't reached GitHub yet
+            if (cloudMovies.length >= localMovies.length && cloudMovies.length > 0) {
                 safeStorage.setItem("movies_db", JSON.stringify(cloudMovies));
                 movies.length = 0;
                 movies.push(...cloudMovies);
                 renderCatalog();
                 console.log("[GitHub] Catalog loaded from cloud — " + cloudMovies.length + " movies.");
+            } else if (localMovies.length > cloudMovies.length) {
+                // Local has more — keep local, push it to cloud to sync
+                console.log("[GitHub] Local has more movies (" + localMovies.length + " vs " + cloudMovies.length + "). Keeping local.");
+                if (typeof GitHubSync !== "undefined" && GitHubSync.hasToken) {
+                    GitHubSync.saveMovies(localMovies).catch(e => console.warn("[GitHub] Auto-push failed:", e.message));
+                }
             }
         } catch(e) {
             console.warn("[GitHub] Could not load cloud catalog:", e.message);
