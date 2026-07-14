@@ -1299,91 +1299,25 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCatalog();
 
     // -------------------------------------------------------------
-    // GOOGLE DRIVE CLOUD SYNC SYSTEM
+    // GITHUB CLOUD SYNC — auto-load for ALL visitors (no login)
     // -------------------------------------------------------------
-    if (typeof GDriveSync !== "undefined") {
-        GDriveSync.subscribe((state) => {
-            if (state.isAuthorized) {
-                syncFromGDrive();
-            } else if (state.hasCredentials) {
-                // Fetch public databases for guest viewers anonymously
-                syncFromGDrivePublic();
-            }
-        });
-    }
-
-    async function syncFromGDrivePublic() {
+    async function loadFromGitHub() {
+        if (typeof GitHubSync === "undefined") return;
         try {
-            const fileId = await GDriveSync.findFileIdPublic("movies_db.json");
-            if (fileId) {
-                const cloudMoviesText = await GDriveSync.downloadFilePublic(fileId);
-                if (cloudMoviesText) {
-                    const cloudMovies = JSON.parse(cloudMoviesText);
-                    if (Array.isArray(cloudMovies) && cloudMovies.length > 0) {
-                        safeStorage.setItem("movies_db", cloudMoviesText);
-                        movies.length = 0;
-                        movies.push(...cloudMovies);
-                        renderCatalog();
-                        console.log("Catalog synchronized with Google Drive database (Public View Mode).");
-                    }
-                }
-            }
-            
-            const usersFileId = await GDriveSync.findFileIdPublic("users_db.json");
-            if (usersFileId) {
-                const cloudUsersText = await GDriveSync.downloadFilePublic(usersFileId);
-                if (cloudUsersText) {
-                    const cloudUsers = JSON.parse(cloudUsersText);
-                    if (Array.isArray(cloudUsers) && cloudUsers.length > 0) {
-                        safeStorage.setItem("users_db", cloudUsersText);
-                        users.length = 0;
-                        users.push(...cloudUsers);
-                    }
-                }
+            const cloudMovies = await GitHubSync.loadMovies();
+            if (cloudMovies && cloudMovies.length > 0) {
+                safeStorage.setItem("movies_db", JSON.stringify(cloudMovies));
+                movies.length = 0;
+                movies.push(...cloudMovies);
+                renderCatalog();
+                console.log("[GitHub] Catalog loaded from cloud — " + cloudMovies.length + " movies.");
             }
         } catch(e) {
-            console.error("GDrive anonymous viewer sync error:", e);
+            console.warn("[GitHub] Could not load cloud catalog:", e.message);
         }
     }
 
-    async function syncFromGDrive() {
-        try {
-            // 1. Fetch cloud movies_db
-            const cloudMoviesText = await GDriveSync.downloadFile("movies_db.json");
-            if (cloudMoviesText) {
-                const cloudMovies = JSON.parse(cloudMoviesText);
-                if (Array.isArray(cloudMovies) && cloudMovies.length > 0) {
-                    safeStorage.setItem("movies_db", cloudMoviesText);
-                    // Clear and merge remote catalog array reference
-                    movies.length = 0;
-                    movies.push(...cloudMovies);
-                    
-                    // Re-render display grid with cloud changes
-                    renderCatalog();
-                    console.log("Catalog synchronized with Google Drive database.");
-                }
-            } else {
-                // If cloud db doesn't exist, push local catalog to GDrive to initialize it
-                const localMoviesText = safeStorage.getItem("movies_db") || "[]";
-                await GDriveSync.uploadFile("movies_db.json", localMoviesText);
-            }
-            
-            // 2. Fetch cloud users_db
-            const cloudUsersText = await GDriveSync.downloadFile("users_db.json");
-            if (cloudUsersText) {
-                const cloudUsers = JSON.parse(cloudUsersText);
-                if (Array.isArray(cloudUsers) && cloudUsers.length > 0) {
-                    safeStorage.setItem("users_db", cloudUsersText);
-                    users.length = 0;
-                    users.push(...cloudUsers);
-                    console.log("Users database synchronized with Google Drive.");
-                }
-            } else {
-                const localUsersText = safeStorage.getItem("users_db") || "[]";
-                await GDriveSync.uploadFile("users_db.json", localUsersText);
-            }
-        } catch(e) {
-            console.error("GDrive client sync handler error:", e);
-        }
-    }
+    // Run immediately — works for every visitor without any login
+    loadFromGitHub();
 });
+

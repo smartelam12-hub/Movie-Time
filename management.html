@@ -304,37 +304,38 @@
                     <a href="upload.html" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 10px 14px;"><i class="fa-solid fa-plus" style="margin-right: 6px;"></i> Publish Release</a>
                 </div>
 
-                <!-- Google Drive Sync Panel -->
-                <div class="action-card glass-panel" style="border: 1px solid rgba(0, 240, 255, 0.15); background: rgba(0, 240, 255, 0.01);">
-                    <h3><i class="fa-brands fa-google-drive" style="color: var(--accent-cyan); margin-right:4px;"></i> Google Drive Sync</h3>
-                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Sync your movie catalog and members database with Google Drive cloud storage.</p>
-                    
-                    <div id="sync-status-area" style="padding: 8px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Status: <span id="sync-status-txt" style="font-weight: 700; color: var(--accent-red);">Disconnected</span></div>
+                <!-- GitHub Cloud Sync Panel -->
+                <div class="action-card glass-panel" style="border: 1px solid rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02);">
+                    <h3><i class="fa-brands fa-github" style="color: var(--accent-cyan); margin-right:4px;"></i> GitHub Cloud Sync</h3>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Movies sync to GitHub automatically. All viewers load from the public URL — no login needed.</p>
+
+                    <div style="padding: 8px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Status: <span id="gh-status-txt" style="font-weight: 700; color: var(--accent-red);">Token not set</span></div>
                     </div>
-                    
-                    <!-- Direct Connection Action Button -->
-                    <button type="button" class="btn" id="btn-sync-toggle" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 10px 14px; margin-bottom: 8px; font-weight: 700;"><i class="fa-solid fa-cloud"></i> Connect Drive</button>
-                    
-                    <!-- Manual Sync Action Button -->
-                    <button type="button" class="btn" id="btn-sync-now" style="width: 100%; justify-content: center; font-size: 0.82rem; padding: 10px 14px; margin-bottom: 12px; font-weight: 700; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); display: none;"><i class="fa-solid fa-rotate"></i> Sync local data to Cloud</button>
-                    
-                    <!-- Advanced custom credentials toggle link -->
-                    <a href="#" id="sync-toggle-advanced" style="font-size: 0.72rem; color: var(--accent-cyan); text-decoration: none; display: block; text-align: center; margin-bottom: 5px;"><i class="fa-solid fa-cog"></i> Advanced Settings</a>
-                    
-                    <!-- Console Debug Logs -->
-                    <div id="sync-debug-log" style="font-size: 0.65rem; color: #00f0ff; font-family: monospace; background: rgba(0,0,0,0.35); padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06); margin-top: 10px; max-height: 80px; overflow-y: auto; display: none; text-align: left; word-break: break-all; white-space: pre-wrap;"></div>
-                    
-                    <div id="sync-advanced-fields" style="display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 10px;">
+
+                    <button type="button" class="btn" id="btn-gh-sync-now" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 10px 14px; margin-bottom: 8px; font-weight: 700; background: rgba(0,240,255,0.12); border: 1px solid var(--accent-cyan); color: var(--accent-cyan);"><i class="fa-solid fa-rotate"></i> Push to Cloud Now</button>
+
+                    <a href="#" id="gh-toggle-settings" style="font-size: 0.72rem; color: var(--accent-cyan); text-decoration: none; display: block; text-align: center; margin-bottom: 5px;"><i class="fa-solid fa-cog"></i> GitHub Settings</a>
+
+                    <div id="gh-settings-fields" style="display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 10px;">
                         <div class="em-field" style="margin-bottom: 8px;">
-                            <label class="em-lbl" style="font-size: 0.65rem;">OAuth Client ID</label>
-                            <input type="text" id="sync-client-id" class="em-inp" style="padding: 6px 10px; font-size: 0.75rem;" placeholder="Paste Client ID...">
+                            <label class="em-lbl" style="font-size: 0.65rem;">GitHub Username</label>
+                            <input type="text" id="gh-owner" class="em-inp" style="padding: 6px 10px; font-size: 0.75rem;" placeholder="e.g. smartelam12-hub">
+                        </div>
+                        <div class="em-field" style="margin-bottom: 8px;">
+                            <label class="em-lbl" style="font-size: 0.65rem;">Repository Name</label>
+                            <input type="text" id="gh-repo" class="em-inp" style="padding: 6px 10px; font-size: 0.75rem;" placeholder="e.g. movie-portal">
+                        </div>
+                        <div class="em-field" style="margin-bottom: 8px;">
+                            <label class="em-lbl" style="font-size: 0.65rem;">Branch</label>
+                            <input type="text" id="gh-branch" class="em-inp" style="padding: 6px 10px; font-size: 0.75rem;" placeholder="main">
                         </div>
                         <div class="em-field" style="margin-bottom: 12px;">
-                            <label class="em-lbl" style="font-size: 0.65rem;">API Key</label>
-                            <input type="password" id="sync-api-key" class="em-inp" style="padding: 6px 10px; font-size: 0.75rem;" placeholder="Paste API Key...">
+                            <label class="em-lbl" style="font-size: 0.65rem;">GitHub Personal Access Token</label>
+                            <input type="password" id="gh-token" class="em-inp" style="padding: 6px 10px; font-size: 0.75rem;" placeholder="ghp_xxxxxxxxxxxx">
+                            <span style="font-size: 0.62rem; color: var(--text-muted); margin-top: 3px; display: block;">Create at: github.com → Settings → Developer → Tokens → Contents (write)</span>
                         </div>
-                        <button type="button" class="btn btn-primary" id="btn-sync-save-creds" style="width: 100%; justify-content: center; font-size: 0.78rem; padding: 8px 12px;"><i class="fa-solid fa-floppy-disk"></i> Save Custom Keys</button>
+                        <button type="button" class="btn btn-primary" id="btn-gh-save" style="width: 100%; justify-content: center; font-size: 0.78rem; padding: 8px 12px;"><i class="fa-solid fa-floppy-disk"></i> Save GitHub Settings</button>
                     </div>
                 </div>
 
@@ -457,7 +458,7 @@
     </div>
 
     <!-- Management Dashboard Logic -->
-    <script src="gdrive_v3.js"></script>
+    <script src="github_sync.js?v=1"></script>
     <script>
         function showNotification(title, message, isSuccess = true) {
             const oldToast = document.querySelector(".custom-toast");
@@ -646,7 +647,7 @@
             safeStorage.setItem("movies_db", JSON.stringify(movies));
             closeEditModal();
             renderTable();
-            triggerGDriveUpload(); // Sync edits
+            autoGitHubPush(); // Auto-push every edit to cloud
         });
 
         // Initialize Table
@@ -666,140 +667,70 @@
         });
 
         // -------------------------------------------------------------
-        // GOOGLE DRIVE SYNC MANAGER HANDLER
+        // GITHUB SYNC MANAGER HANDLER
         // -------------------------------------------------------------
-        const syncClientIdInp = document.getElementById("sync-client-id");
-        const syncApiKeyInp = document.getElementById("sync-api-key");
-        const btnSaveCreds = document.getElementById("btn-sync-save-creds");
-        const syncStatusArea = document.getElementById("sync-status-area");
-        const syncStatusTxt = document.getElementById("sync-status-txt");
-        const btnSyncToggle = document.getElementById("btn-sync-toggle");
 
-        // Advanced settings toggle UI handler
-        const toggleAdvanced = document.getElementById("sync-toggle-advanced");
-        const advancedFields = document.getElementById("sync-advanced-fields");
-        toggleAdvanced.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (advancedFields.style.display === "none") {
-                advancedFields.style.display = "block";
-                toggleAdvanced.innerHTML = '<i class="fa-solid fa-cog"></i> Hide Advanced Settings';
+        // Load saved settings into fields
+        document.getElementById("gh-owner").value  = localStorage.getItem("gh_owner")  || "smartelam12-hub";
+        document.getElementById("gh-repo").value   = localStorage.getItem("gh_repo")   || "movie-portal";
+        document.getElementById("gh-branch").value = localStorage.getItem("gh_branch") || "main";
+
+        function updateGhStatus() {
+            const txt = document.getElementById("gh-status-txt");
+            if (GitHubSync && GitHubSync.hasToken) {
+                txt.textContent = "Connected — " + (GitHubSync.owner + "/" + GitHubSync.repo);
+                txt.style.color = "var(--accent-green)";
             } else {
-                advancedFields.style.display = "none";
-                toggleAdvanced.innerHTML = '<i class="fa-solid fa-cog"></i> Advanced Settings';
+                txt.textContent = "Token not set — changes won't sync";
+                txt.style.color = "var(--accent-red)";
             }
+        }
+        updateGhStatus();
+
+        // Toggle settings panel
+        document.getElementById("gh-toggle-settings").addEventListener("click", (e) => {
+            e.preventDefault();
+            const fields = document.getElementById("gh-settings-fields");
+            fields.style.display = fields.style.display === "none" ? "block" : "none";
         });
 
-        if (typeof GDriveSync !== "undefined") {
-            GDriveSync.subscribe((state) => {
-                syncClientIdInp.value = state.clientId;
-                // Pre-mask credentials on display if present
-                syncApiKeyInp.value = state.apiKey ? "••••••••••••••••" : "";
-                
-                // Button is always visible since defaults are seeded
-                btnSyncToggle.style.display = "block";
-                
-                if (state.isAuthorized) {
-                    syncStatusTxt.textContent = "Connected";
-                    syncStatusTxt.style.color = "var(--accent-green)";
-                    btnSyncToggle.innerHTML = '<i class="fa-solid fa-unlink"></i> Disconnect Drive';
-                    btnSyncToggle.style.background = "rgba(255, 59, 48, 0.15)";
-                    btnSyncToggle.style.border = "1px solid var(--accent-red)";
-                    btnSyncToggle.style.color = "var(--accent-red)";
-                    
-                    // Show manual sync button when authorized
-                    document.getElementById("btn-sync-now").style.display = "flex";
-                    
-                    // Perform cloud sync fetch to merge cloud updates on connection
-                    syncFromGDrive();
-                } else {
-                    syncStatusTxt.textContent = "Disconnected";
-                    syncStatusTxt.style.color = "var(--accent-red)";
-                    btnSyncToggle.innerHTML = '<i class="fa-solid fa-cloud"></i> Connect Drive';
-                    btnSyncToggle.style.background = "rgba(0, 240, 255, 0.15)";
-                    btnSyncToggle.style.border = "1px solid var(--accent-cyan)";
-                    btnSyncToggle.style.color = "var(--accent-cyan)";
-                    
-                    // Hide manual sync button when disconnected
-                    document.getElementById("btn-sync-now").style.display = "none";
-                }
-            });
-        }
+        // Save GitHub settings
+        document.getElementById("btn-gh-save").addEventListener("click", () => {
+            const owner  = document.getElementById("gh-owner").value.trim();
+            const repo   = document.getElementById("gh-repo").value.trim();
+            const branch = document.getElementById("gh-branch").value.trim() || "main";
+            const token  = document.getElementById("gh-token").value.trim();
+            GitHubSync.setConfig({ owner, repo, branch, token });
+            showNotification("Settings Saved", "GitHub config saved. Movies will now sync to GitHub automatically!", true);
+            updateGhStatus();
+        });
 
-        // Click listener for manual sync button
-        document.getElementById("btn-sync-now").addEventListener("click", async () => {
-            const btn = document.getElementById("btn-sync-now");
+        // Manual push
+        document.getElementById("btn-gh-sync-now").addEventListener("click", async () => {
+            const btn = document.getElementById("btn-gh-sync-now");
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Pushing...';
             try {
-                await triggerGDriveUpload();
-                showNotification("Cloud Sync", "Database successfully synchronized and shared publicly on Google Drive cloud!", true);
+                const localMovies = JSON.parse(safeStorage.getItem("movies_db") || "[]");
+                await GitHubSync.saveMovies(localMovies);
+                showNotification("Cloud Sync", "Movies pushed to GitHub! All visitors will see them in seconds.", true);
             } catch (e) {
                 showNotification("Sync Failed", e.message, false);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sync local data to Cloud';
+                btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Push to Cloud Now';
             }
         });
 
-        btnSaveCreds.addEventListener("click", () => {
-            const cid = syncClientIdInp.value.trim();
-            const key = syncApiKeyInp.value.trim();
-            
-            if (!cid || !key) {
-                if (confirm("Restore seeded default Google Drive credentials?")) {
-                    GDriveSync.clearCredentials();
-                    showNotification("System Settings", "Credentials reset to defaults.", true);
-                }
-                return;
-            }
-            
-            const actualKey = key.includes("••••") ? GDriveSync.apiKey : key;
-            GDriveSync.setCredentials(cid, actualKey);
-            showNotification("System Settings", "Custom credentials saved successfully!", true);
-        });
-
-        btnSyncToggle.addEventListener("click", () => {
-            if (GDriveSync.isAuthorized) {
-                if (confirm("Disconnect Google Drive session?")) {
-                    GDriveSync.logout();
-                }
-            } else {
-                GDriveSync.login();
-            }
-        });
-
-        // Pull GDrive remote catalog db and override local copy if newer
-        async function syncFromGDrive() {
+        // Auto-push helper (called after every save/edit)
+        async function autoGitHubPush() {
+            if (!GitHubSync || !GitHubSync.hasToken) return;
             try {
-                const cloudMoviesText = await GDriveSync.downloadFile("movies_db.json");
-                if (cloudMoviesText) {
-                    const cloudMovies = JSON.parse(cloudMoviesText);
-                    if (Array.isArray(cloudMovies) && cloudMovies.length > 0) {
-                        safeStorage.setItem("movies_db", cloudMoviesText);
-                        renderTable();
-                        console.log("Catalog database synchronized with Google Drive cloud.");
-                    }
-                } else {
-                    // Seed initial cloud copy from local storage if cloud is blank
-                    await triggerGDriveUpload();
-                }
-            } catch(e) {
-                console.error("GDrive initial download sync failed:", e);
-            }
-        }
-
-        async function triggerGDriveUpload() {
-            if (GDriveSync.isAuthorized) {
-                try {
-                    const localMovies = safeStorage.getItem("movies_db") || "[]";
-                    await GDriveSync.uploadFile("movies_db.json", localMovies);
-                    
-                    const localUsers = safeStorage.getItem("users_db") || "[]";
-                    await GDriveSync.uploadFile("users_db.json", localUsers);
-                } catch(e) {
-                    console.error("GDrive auto-upload failed:", e);
-                    throw e;
-                }
+                const localMovies = JSON.parse(safeStorage.getItem("movies_db") || "[]");
+                await GitHubSync.saveMovies(localMovies);
+                showNotification("Cloud Sync", "Changes saved and pushed to cloud automatically!", true);
+            } catch (e) {
+                showNotification("Auto-Sync Failed", e.message, false);
             }
         }
     </script>
